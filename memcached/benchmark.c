@@ -21,9 +21,62 @@ int main() {
 
   const char *configString = "--SERVER=db";
 
-  memcached_st *memc = memcached(configString, strlen(configString);
+  memcached_st *memc = memcached(configString, strlen(configString));
 
+#define FLUSHALL memcached_flush(memc, (time_t) 0);
 
+  FLUSHALL
+
+  START_BENCHMARK
+  for (int i = 0; i < repeatTimes; i++) {
+    char str[20];
+    sprintf(str, "%d", i);
+    size_t vlen = strlen(str);
+    memcached_return_t rc = memcached_set(memc, str, vlen, str, vlen, (time_t) 0, (uint32_t) 0);
+    if (rc != MEMCACHED_SUCCESS) {
+      printf("memcached raw write failed at %d", i);
+      return 1;
+    }
+  }
+  END_BENCHMARK
+  SHOW_BENCHMARK("raw write")
+
+  START_BENCHMARK
+  for (int i = 0; i < repeatTimes; i++) {
+    char str[20];
+    sprintf(str, "%d", i);
+    size_t vlen = strlen(str);
+    memcached_return_t rc;
+    size_t value_len;
+    memcached_get(memc, str, vlen, &value_len, NULL, &rc);
+    if (rc != MEMCACHED_SUCCESS) {
+      printf("memcached raw read failed at %d", i);
+      return 1;
+    }
+  }
+  END_BENCHMARK
+  SHOW_BENCHMARK("raw read")
+
+  FLUSHALL
+  START_BENCHMARK
+  for (int i = 0; i < repeatTimes; i++) {
+    char str[20];
+    sprintf(str, "%d", i);
+    size_t vlen = strlen(str);
+    memcached_return_t rc = memcached_set(memc, str, vlen, str, vlen, (time_t) 0, (uint32_t) 0);
+    if (rc != MEMCACHED_SUCCESS) {
+      printf("memcached write then read write failed at %d", i);
+      return 1;
+    }
+    size_t value_len;
+    memcached_get(memc, str, vlen, &value_len, NULL, &rc);
+    if (rc != MEMCACHED_SUCCESS) {
+      printf("memcached write then read read failed at %d", i);
+      return 1;
+    }
+  }
+  END_BENCHMARK
+  SHOW_BENCHMARK("write then read");
 
   memcached_free(memc);
 
