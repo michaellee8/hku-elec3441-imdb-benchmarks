@@ -1,0 +1,14 @@
+version: "3"
+services:
+  db:
+    image: "memcached:1-alpine"
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 1G
+        reservations:
+          cpus: '2.0'
+          memory: 1G
+  benchmark:
+    build: ./
