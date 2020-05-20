@@ -5,7 +5,7 @@
 
 #include "hiredis.h"
 
-const int repeatTimes = 1000000;
+const int repeatTimes = 100000;
 
 int main() {
 

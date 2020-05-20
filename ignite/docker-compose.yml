@@ -1,7 +1,7 @@
 version: "3"
 services:
   db:
-    image: "redis:6-alpine"
+    image: "apacheignite/ignite:2.8.0"
     deploy:
       resources:
         limits:
@@ -10,6 +10,5 @@ services:
         reservations:
           cpus: '2.0'
           memory: 1G
-    command: memcached -m 1900
   benchmark:
     build: ./
