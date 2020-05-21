@@ -1,0 +1,218 @@
+running in memcached/
+Step 1/5 : FROM gcc:9
+ ---> 233efa959433
+Step 2/5 : RUN apt-get update && apt-get install -y libmemcached-dev
+ ---> Using cache
+ ---> 92c92eb6f8da
+Step 3/5 : COPY benchmark.c .
+ ---> Using cache
+ ---> a168d330b2bd
+Step 4/5 : RUN gcc -o benchmark -lmemcached benchmark.c
+ ---> Using cache
+ ---> 93d395b6c2c8
+Step 5/5 : CMD ["./benchmark"]
+ ---> Using cache
+ ---> dd22f188a930
+
+Successfully built dd22f188a930
+Successfully tagged memcached_benchmark:latest
+Attaching to memcached_benchmark_1
+[36mbenchmark_1  |[0m configString: --SERVER=172.28.0.2:11211
+[36mbenchmark_1  |[0m 4868 milliseconds elapsed in raw write benchmark
+[36mbenchmark_1  |[0m 4970 milliseconds elapsed in raw read benchmark
+[36mbenchmark_1  |[0m 10091 milliseconds elapsed in write then read benchmark
+[36mmemcached_benchmark_1 exited with code 0
+[0mrunning in mongodb/
+Step 1/13 : FROM gcc:9
+ ---> 233efa959433
+Step 2/13 : RUN apt-get update && apt-get install -y cmake libssl-dev libsasl2-dev libboost-dev
+ ---> Using cache
+ ---> b753e6cbf994
+Step 3/13 : ADD https://github.com/mongodb/mongo-c-driver/releases/download/1.16.0/mongo-c-driver-1.16.0.tar.gz .
+
+ ---> Using cache
+ ---> f528490f7dee
+Step 4/13 : WORKDIR /
+ ---> Using cache
+ ---> 772df2a74e28
+Step 5/13 : RUN tar xzf mongo-c-driver-1.16.0.tar.gz &&     cd mongo-c-driver-1.16.0 &&     mkdir cmake-build &&     cd cmake-build &&     cmake -DENABLE_AUTOMATIC_INIT_AND_CLEANUP=OFF .. &&     make install
+ ---> Using cache
+ ---> d1105503524d
+Step 6/13 : WORKDIR /
+ ---> Using cache
+ ---> b8754ee77ae2
+Step 7/13 : ADD https://github.com/mongodb/mongo-cxx-driver/archive/r3.5.0.tar.gz .
+
+
+ ---> Using cache
+ ---> 27c07f04883f
+Step 8/13 : RUN tar -xzf r3.5.0.tar.gz &&     cd mongo-cxx-driver-r3.5.0/build &&     cmake ..                                        -DCMAKE_BUILD_TYPE=Release                  -DBUILD_SHARED_AND_STATIC_LIBS=ON           -DCMAKE_INSTALL_PREFIX=/usr/local           -DBUILD_VERSION=3.5.0                       -DBSONCXX_POLY_USE_BOOST=1       &&     make -j4 && make install
+ ---> Using cache
+ ---> 5ea40a4d703d
+Step 9/13 : WORKDIR /
+ ---> Using cache
+ ---> 60753856d590
+Step 10/13 : COPY benchmark.cpp .
+ ---> Using cache
+ ---> 772e451651b7
+Step 11/13 : RUN gcc --std=c++17 -g -lc -lstdc++ -o benchmark benchmark.cpp -I/usr/local/include     $(pkg-config --cflags --libs libmongocxx)     $(pkg-config --cflags --libs libbsoncxx)     $(pkg-config --cflags --libs libbson-1.0)     $(pkg-config --cflags --libs libmongoc-1.0)
+ ---> Using cache
+ ---> 4bcb18aaef68
+Step 12/13 : ENV LD_LIBRARY_PATH=/usr/local/lib
+ ---> Using cache
+ ---> 9b0c94350faf
+Step 13/13 : CMD ["./benchmark"]
+ ---> Using cache
+ ---> b290ec214173
+
+Successfully built b290ec214173
+Successfully tagged mongodb_benchmark:latest
+Attaching to mongodb_benchmark_1
+[36mbenchmark_1  |[0m 12217 milliseconds elapsed in raw write benchmark
+[36mbenchmark_1  |[0m 16510 milliseconds elapsed in raw read benchmark
+[36mbenchmark_1  |[0m 30990 milliseconds elapsed in write then read benchmark
+[36mmongodb_benchmark_1 exited with code 0
+[0mrunning in mongodb-file/
+Step 1/13 : FROM gcc:9
+ ---> 233efa959433
+Step 2/13 : RUN apt-get update && apt-get install -y cmake libssl-dev libsasl2-dev libboost-dev
+ ---> Using cache
+ ---> b753e6cbf994
+Step 3/13 : ADD https://github.com/mongodb/mongo-c-driver/releases/download/1.16.0/mongo-c-driver-1.16.0.tar.gz .
+
+ ---> Using cache
+ ---> f528490f7dee
+Step 4/13 : WORKDIR /
+ ---> Using cache
+ ---> 772df2a74e28
+Step 5/13 : RUN tar xzf mongo-c-driver-1.16.0.tar.gz &&     cd mongo-c-driver-1.16.0 &&     mkdir cmake-build &&     cd cmake-build &&     cmake -DENABLE_AUTOMATIC_INIT_AND_CLEANUP=OFF .. &&     make install
+ ---> Using cache
+ ---> d1105503524d
+Step 6/13 : WORKDIR /
+ ---> Using cache
+ ---> b8754ee77ae2
+Step 7/13 : ADD https://github.com/mongodb/mongo-cxx-driver/archive/r3.5.0.tar.gz .
+
+ ---> Using cache
+ ---> 27c07f04883f
+Step 8/13 : RUN tar -xzf r3.5.0.tar.gz &&     cd mongo-cxx-driver-r3.5.0/build &&     cmake ..                                        -DCMAKE_BUILD_TYPE=Release                  -DBUILD_SHARED_AND_STATIC_LIBS=ON           -DCMAKE_INSTALL_PREFIX=/usr/local           -DBUILD_VERSION=3.5.0                       -DBSONCXX_POLY_USE_BOOST=1       &&     make -j4 && make install
+ ---> Using cache
+ ---> 5ea40a4d703d
+Step 9/13 : WORKDIR /
+ ---> Using cache
+ ---> 60753856d590
+Step 10/13 : COPY benchmark.cpp .
+ ---> Using cache
+ ---> 772e451651b7
+Step 11/13 : RUN gcc --std=c++17 -g -lc -lstdc++ -o benchmark benchmark.cpp -I/usr/local/include     $(pkg-config --cflags --libs libmongocxx)     $(pkg-config --cflags --libs libbsoncxx)     $(pkg-config --cflags --libs libbson-1.0)     $(pkg-config --cflags --libs libmongoc-1.0)
+ ---> Using cache
+ ---> 4bcb18aaef68
+Step 12/13 : ENV LD_LIBRARY_PATH=/usr/local/lib
+ ---> Using cache
+ ---> 9b0c94350faf
+Step 13/13 : CMD ["./benchmark"]
+ ---> Using cache
+ ---> b290ec214173
+
+Successfully built b290ec214173
+Successfully tagged mongodb-file_benchmark:latest
+Attaching to mongodb-file_benchmark_1
+[36mbenchmark_1  |[0m 61791 milliseconds elapsed in raw write benchmark
+[36mbenchmark_1  |[0m 15587 milliseconds elapsed in raw read benchmark
+[36mbenchmark_1  |[0m 84453 milliseconds elapsed in write then read benchmark
+[36mmongodb-file_benchmark_1 exited with code 0
+[0mrunning in redis/
+Step 1/7 : FROM gcc:9
+ ---> 233efa959433
+Step 2/7 : RUN apt-get -y install git &&     git clone https://github.com/redis/hiredis.git
+ ---> Using cache
+ ---> 7d724561ce6b
+Step 3/7 : WORKDIR ./hiredis
+ ---> Using cache
+ ---> 2ad6a2467b7d
+Step 4/7 : RUN make &&     make install
+ ---> Using cache
+ ---> 24cbda37f63c
+Step 5/7 : COPY benchmark.c .
+ ---> Using cache
+ ---> e12aa01c4345
+Step 6/7 : RUN gcc -o benchmark benchmark.c libhiredis.a
+ ---> Using cache
+ ---> 0e45d6082890
+Step 7/7 : CMD ["./benchmark"]
+ ---> Using cache
+ ---> 7df0a13b483f
+
+Successfully built 7df0a13b483f
+Successfully tagged redis_benchmark:latest
+Attaching to redis_benchmark_1
+[36mbenchmark_1  |[0m Connected to Redis
+[36mbenchmark_1  |[0m 5105 milliseconds elapsed in raw write benchmark
+[36mbenchmark_1  |[0m 5135 milliseconds elapsed in raw read benchmark
+[36mbenchmark_1  |[0m 10180 milliseconds elapsed in write then read benchmark
+[36mredis_benchmark_1 exited with code 0
+[0mrunning in sqlite3/
+Step 1/8 : FROM gcc:9
+ ---> 233efa959433
+Step 2/8 : RUN apt-get update && apt-get install -y cmake
+ ---> Using cache
+ ---> 44fc3e2d9d1f
+Step 3/8 : WORKDIR /app
+ ---> Using cache
+ ---> 2ad57c2494ee
+Step 4/8 : COPY . .
+ ---> Using cache
+ ---> 367b8e10425c
+Step 5/8 : WORKDIR /app/build
+ ---> Using cache
+ ---> 5a0175712ddc
+Step 6/8 : RUN cmake ..
+ ---> Using cache
+ ---> c28474278c64
+Step 7/8 : RUN make
+ ---> Using cache
+ ---> f99c49dc79e2
+Step 8/8 : CMD ["./benchmark"]
+ ---> Using cache
+ ---> 2aee6f1edd72
+
+Successfully built 2aee6f1edd72
+Successfully tagged sqlite3_benchmark:latest
+Attaching to sqlite3_benchmark_1
+[36mbenchmark_1  |[0m 1288 milliseconds elapsed in raw write benchmark
+[36mbenchmark_1  |[0m 279 milliseconds elapsed in raw read benchmark
+[36mbenchmark_1  |[0m 1570 milliseconds elapsed in write then read benchmark
+[36msqlite3_benchmark_1 exited with code 0
+[0mrunning in sqlite3-file/
+Step 1/8 : FROM gcc:9
+ ---> 233efa959433
+Step 2/8 : RUN apt-get update && apt-get install -y cmake
+ ---> Using cache
+ ---> 44fc3e2d9d1f
+Step 3/8 : WORKDIR /app
+ ---> Using cache
+ ---> 2ad57c2494ee
+Step 4/8 : COPY . .
+ ---> Using cache
+ ---> e6628041f2a9
+Step 5/8 : WORKDIR /app/build
+ ---> Using cache
+ ---> a715630acf17
+Step 6/8 : RUN cmake ..
+ ---> Using cache
+ ---> 4b2e325993e7
+Step 7/8 : RUN make
+ ---> Using cache
+ ---> 73c4fa6ed5e1
+Step 8/8 : CMD ["./benchmark"]
+ ---> Using cache
+ ---> 4ee2ba14c6b4
+
+Successfully built 4ee2ba14c6b4
+Successfully tagged sqlite3-file_benchmark:latest
+Attaching to sqlite3-file_benchmark_1
+[36mbenchmark_1  |[0m 139232 milliseconds elapsed in raw write benchmark
+[36mbenchmark_1  |[0m 1034 milliseconds elapsed in raw read benchmark
+[36mbenchmark_1  |[0m 137775 milliseconds elapsed in write then read benchmark
+[36msqlite3-file_benchmark_1 exited with code 0
+[0m
