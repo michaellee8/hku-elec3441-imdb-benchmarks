@@ -1,14 +1,15 @@
 version: "3"
 services:
   db:
-    image: "apacheignite/ignite:2.8.0"
+    image: "radiantwf/mongodb-enterprise:4.0.6"
+    command: --wiredTigerCacheSizeGB 0.001
     deploy:
       resources:
         limits:
           cpus: '2.0'
-          memory: 1G
+          memory: 4G
         reservations:
           cpus: '2.0'
-          memory: 1G
+          memory: 4G
   benchmark:
     build: ./

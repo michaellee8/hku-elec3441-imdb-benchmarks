@@ -1,7 +1,8 @@
 version: "3"
 services:
   db:
-    image: "memcached:1-alpine"
+    image: "radiantwf/mongodb-enterprise:4.0.6"
+    command: --storageEngine inMemory
     deploy:
       resources:
         limits:

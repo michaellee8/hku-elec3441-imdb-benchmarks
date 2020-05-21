@@ -6,10 +6,9 @@ services:
       resources:
         limits:
           cpus: '2.0'
-          memory: 1G
+          memory: 4G
         reservations:
           cpus: '2.0'
-          memory: 1G
-    command: memcached -m 1900
+          memory: 4G
   benchmark:
     build: ./
