@@ -1,9 +1,10 @@
 #!/bin/bash
-git submodule init --recursive
+git submodule init
+git submodule update
 for dir in */ ; do
-    if [[ -d "$dir" ]] && [[ -e "$dir/run.sh"]]; then
-        echo "running in $d"
-        cd "$d"
+    if [[ -d "$dir" ]] && [[ -e "$dir/run.sh" ]]; then
+        echo "running in $dir"
+        cd "$dir"
         ./run.sh
         cd "../"
     fi
